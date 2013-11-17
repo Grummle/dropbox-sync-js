@@ -1204,10 +1204,12 @@ function globToRegex(glob)
     return new RegExp(regexChars.join(""));
 }
 
-
-
 exports.doSync = doSync;
 
-main();
+if(!module.parent){
+    main();
+}
+
+
 
 
