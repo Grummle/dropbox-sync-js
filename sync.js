@@ -7,6 +7,8 @@ var allow_remote_deletes = true;
 var allow_downloads = true;
 var allow_local_deletes = true;
 
+var data_base_path = getUserHome();
+
 var sync_data_file = ".dropbox_sync_data";
 var sync_data_path = null;
 var settings_file = ".dropbox_settings";
@@ -51,6 +53,9 @@ function main()
 				getExcludePatterns();
 			}
 		}
+        else if(process.argv[2] === "data"){
+            doSync(null,process.argv[3]);
+        }
 		else if(process.argv[2] == "include")
 		{
 			var pattern = process.argv[3];
@@ -69,12 +74,14 @@ function main()
 			console.log("node sync.js exclude [pattern]   Add an exclude pattern. Can contain wildcards * and ?");
 			console.log("node sync.js include [pattern]   Remove an exclude pattern.");
 			console.log("node sync.js quota               Lists space quota and amount used.")
+            console.log("node sync.js data [path]         Specify base path for data directory.")
 		}
 	}
 }
 
-function doSync(callback)
+function doSync(callback, basePath)
 {	
+    if(basePath) { data_base_path=basePath; }
 	remote_delta_finished = false;
 	local_delta_finished = false;
 	
@@ -197,8 +204,8 @@ function getQuota()
 
 function readSettings(callback)
 {
-	sync_data_path = getUserHome() + "/" + sync_data_file;
-	settings_path = getUserHome() + "/" + settings_file;
+	sync_data_path = data_base_path + "/" + sync_data_file;
+	settings_path = data_base_path + "/" + settings_file;
 
 	fs.readFile(settings_path, "utf8", function(error, data)
 	{
@@ -1209,7 +1216,5 @@ exports.doSync = doSync;
 if(!module.parent){
     main();
 }
-
-
 
 
